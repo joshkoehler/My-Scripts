@@ -1,0 +1,16 @@
+#!/bin/bash
+
+className=$1
+shift
+
+changedDir=false
+if [ ! -z $1 ] ; then
+  pushd ~/repo/$1
+  changedDir=true
+fi	
+
+for i in `find . -name *.jar -type f`; do jar tf "$i" 2>/dev/null | grep -qi $className && echo "$i"; done
+
+if [ $changedDir ] ; then
+  popd
+fi
