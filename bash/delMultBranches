@@ -1,0 +1,24 @@
+#!/bin/bash
+
+if [ -z $1 ] ; then
+  echo "Usage: delMultBranches gitRepo"
+  exit 1
+fi
+
+cd $1
+
+# Check that directory provided is a git repository
+if [ ! -z "$(git status 2>&1>/dev/null | grep fatal)" ] ; then
+  echo "Argument provided is not a git repository"
+  echo "Usage: delMultBranches gitRepo"
+  exit 1
+fi
+
+# Check for worktrees to filter checked out branches
+checkedOut=$(git worktree list | awk '{print $3}')
+for i in `git for-each-ref refs/heads --format='%(refname:short)'` ;
+  do
+    if [ -z "$(grep $i <<< \"$checkedOut\")" ] ; then
+      delBranch $i
+    fi
+  done

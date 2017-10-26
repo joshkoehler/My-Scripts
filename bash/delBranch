@@ -1,0 +1,24 @@
+#!/bin/bash
+
+if [ -z $1 ] ; then
+  echo "Usage: delBranch branchName"
+  exit 1
+fi
+
+echo -n "Delete $1 (y/n)?"
+read del
+if [ ! -z $del ] && [ $del = "y" ] ; then
+  if [ -z "$(git branch -D $1 2>&1>/dev/null)" ] ; then
+    echo -n "DELETED $1. Delete remote (y/n)?"
+    read delRem
+    if [ ! -z $del ] && [ $del = "y" ] ; then
+      if [ ! -z "$(git push me :$1 2>&1>/dev/null | grep error)" ] ; then
+        echo "Could not delete remote branch for $1. Are you sure it exists?"
+      else
+        echo "DELETED remote $1"
+      fi
+    fi
+  else
+    echo "Unable to delete $1"
+  fi
+fi
